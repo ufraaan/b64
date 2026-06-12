@@ -1,0 +1,12 @@
+complete -c b64 -f
+complete -c b64 -n "__fish_use_subcommand" -a encode -d "Encode input"
+complete -c b64 -n "__fish_use_subcommand" -a decode -d "Decode input"
+complete -c b64 -n "__fish_use_subcommand" -a completion -d "Generate shell completions"
+complete -c b64 -s w -l wrap -r -d "Wrap encoded output at COLUMNS (0 = no wrap)"
+complete -c b64 -l url -d "Use URL-safe alphabet"
+complete -c b64 -l raw -d "URL-safe alphabet without padding"
+complete -c b64 -l ignore-garbage -d "Skip non-alphabet characters during decode"
+complete -c b64 -l check -d "Validate input format without decoding"
+complete -c b64 -l base32 -d "Use base32 encoding"
+complete -c b64 -l base16 -d "Use base16 (hex) encoding"
+complete -c b64 -l help -d "Show help"

@@ -32,14 +32,18 @@ type config struct {
 }
 
 func main() {
-	cfg := parseFlags()
+	cfg, shell := parseFlags()
+	if shell != "" {
+		writeCompletion(shell)
+		return
+	}
 	if err := run(cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func parseFlags() config {
+func parseFlags() (config, string) {
 	wrap := flag.Int("w", 76, "wrap encoded output at COLUMNS (0 = no wrap)")
 	url := flag.Bool("url", false, "use URL-safe alphabet")
 	raw := flag.Bool("raw", false, "URL-safe alphabet without padding")
@@ -74,12 +78,17 @@ func parseFlags() config {
 			if len(args) > 1 {
 				cfg.file = args[1]
 			}
+		case "completion":
+			if len(args) > 1 {
+				return cfg, args[1]
+			}
+			return cfg, "bash"
 		default:
 			cfg.file = args[0]
 		}
 	}
 
-	return cfg
+	return cfg, ""
 }
 
 func run(cfg config) error {
@@ -370,6 +379,7 @@ func init() {
 Commands:
   encode              Encode input (default if input looks binary)
   decode              Decode input (default if input looks like base64)
+  completion <shell>  Generate shell completions (bash, zsh, fish)
   (no command)        Auto-detect encode vs decode
 
 Flags:
@@ -388,9 +398,90 @@ Examples:
   b64 -w 0 --url < input > output
   b64 --check < file.b64
   b64 --base32 < input
+  b64 completion bash  # print bash completions
+  eval "$(b64 completion zsh)"  # source zsh completions
 `)
 	}
 }
+
+func writeCompletion(shell string) {
+	switch shell {
+	case "bash":
+		fmt.Print(bashCompletion)
+	case "zsh":
+		fmt.Print(zshCompletion)
+	case "fish":
+		fmt.Print(fishCompletion)
+	default:
+		die("unknown shell: %s (use bash, zsh, or fish)", shell)
+	}
+}
+
+const bashCompletion = `_b64() {
+	local cur prev opts
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+	opts="encode decode completion -w --url --raw --ignore-garbage --check --base32 --base16 --help"
+
+	case "${prev}" in
+	encode|decode)
+		_filedir
+		return 0
+		;;
+	completion)
+		COMPREPLY=($(compgen -W "bash zsh fish" -- "${cur}"))
+		return 0
+		;;
+	-w)
+		COMPREPLY=()
+		return 0
+		;;
+	*)
+		COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+		return 0
+		;;
+	esac
+} && complete -F _b64 b64
+`
+
+const zshCompletion = `#compdef b64
+
+_b64() {
+	local -a opts
+	opts=(
+		'(-w)'{-w,}'[wrap encoded output at COLUMNS (0 = no wrap)]:columns'
+		'--url[use URL-safe alphabet]'
+		'--raw[URL-safe alphabet without padding]'
+		'--ignore-garbage[skip non-alphabet characters during decode]'
+		'--check[validate input format without decoding]'
+		'--base32[use base32 encoding]'
+		'--base16[use base16 (hex) encoding]'
+		'--help[show help]'
+		'encode:encode input: _files'
+		'decode:decode input: _files'
+		'completion:generate completions:(bash zsh fish)'
+	)
+	_describe -t commands 'b64' opts
+}
+
+_b64 "$@"
+`
+
+const fishCompletion = `complete -c b64 -f
+complete -c b64 -n "__fish_use_subcommand" -a encode -d "Encode input"
+complete -c b64 -n "__fish_use_subcommand" -a decode -d "Decode input"
+complete -c b64 -n "__fish_use_subcommand" -a completion -d "Generate shell completions"
+complete -c b64 -s w -l wrap -r -d "Wrap encoded output at COLUMNS (0 = no wrap)"
+complete -c b64 -l url -d "Use URL-safe alphabet"
+complete -c b64 -l raw -d "URL-safe alphabet without padding"
+complete -c b64 -l ignore-garbage -d "Skip non-alphabet characters during decode"
+complete -c b64 -l check -d "Validate input format without decoding"
+complete -c b64 -l base32 -d "Use base32 encoding"
+complete -c b64 -l base16 -d "Use base16 (hex) encoding"
+complete -c b64 -l help -d "Show help"
+`
 
 func die(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
