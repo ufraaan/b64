@@ -1,6 +1,10 @@
-## b64
+<p align="center">
+  <img src="assets/hero.png" alt="hero">
+</p>
 
-a fast base64 encoder/decoder that runs in your terminal. handles standard base64, base64url, base32, and base16 (hex).
+<h2 align="center">b64</h2>
+
+<p align="center">a fast base64 encoder/decoder that runs in your terminal. handles standard base64, base64url, base32, and base16 (hex).</p>
 
 - [install](#install)
 - [usage](#usage)
