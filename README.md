@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.png" alt="hero">
+  <img src="assets/hero.png" alt="hero" width="600">
 </p>
 
 <h2 align="center">b64</h2>
