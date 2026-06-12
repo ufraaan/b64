@@ -94,14 +94,14 @@ the `main.go` ties everything together into the CLI tool.
 
 ## benchmarks (Apple M5, 64KB blocks)
 
-| operation | throughput |
-|---|---|
-| encode (std) | ~1.9 GB/s |
-| decode (std) | ~792 MB/s |
-| encode (url) | ~2.0 GB/s |
-| decode (url) | ~826 MB/s |
-| stream encode | ~246 MB/s |
-| stream decode | ~378 MB/s |
+| operation | time | throughput |
+|---|---|---|
+| encode (std) | 33.8 µs | ~1.9 GB/s |
+| decode (std) | 82.7 µs | ~792 MB/s |
+| encode (url) | 33.3 µs | ~2.0 GB/s |
+| decode (url) | 79.4 µs | ~826 MB/s |
+| stream encode | 266.6 µs | ~246 MB/s |
+| stream decode | 173.4 µs | ~378 MB/s |
 
 ## tests
 
