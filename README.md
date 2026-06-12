@@ -2,6 +2,17 @@
 
 a fast base64 encoder/decoder that runs in your terminal. handles standard base64, base64url, base32, and base16 (hex).
 
+- [install](#install)
+- [usage](#usage)
+- [flags](#flags)
+- [examples](#examples)
+- [how auto detect works](#how-auto-detect-works)
+- [streaming](#streaming)
+- [performance](#performance)
+- [whats in the box](#whats-in-the-box)
+- [benchmarks](#benchmarks-apple-m5-64kb-blocks)
+- [tests](#tests)
+
 ## install
 
 ```bash
